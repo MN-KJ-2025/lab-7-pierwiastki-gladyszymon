@@ -25,7 +25,19 @@ def roots_20(coef: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
             - Wektor miejsc zerowych (m,).
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    try:
+        if not isinstance(coef, np.ndarray):
+            return None
+        
+        #zaburzenia = np.random.normal(0, 1, size=) * (1e-10)
+        zaburzenia = np.random.random_sample(coef.shape)*(1e-10)
+        coef_zaburzone = coef + zaburzenia
+        miejsca_zerowe = nppoly.polyroots(coef_zaburzone)
+
+        return coef_zaburzone, miejsca_zerowe
+    
+    except Exception:
+        return None
 
 
 def frob_a(coef: np.ndarray) -> np.ndarray | None:
@@ -48,7 +60,25 @@ def frob_a(coef: np.ndarray) -> np.ndarray | None:
         (np.ndarray): Macierz Frobeniusa o rozmiarze (n,n).
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    try:
+        if not isinstance(coef, np.ndarray):
+            return None
+        if len(coef.shape) != 1 or len(coef) < 2:
+            return None
+        if coef[-1] == 0:
+            return None
+        n = len(coef) - 1
+        FrobA = np.zeros((n,n), dtype = float)
+        for i in range(n-1):
+            FrobA[i][i+1] = 1
+        a_n = coef[-1]
+        for j in range(n):
+            FrobA[n-1][j] = -coef[j] / a_n
+        return FrobA
+
+        
+    except Exception:
+        return None
 
 
 def is_nonsingular(A: np.ndarray) -> bool | None:
@@ -63,4 +93,20 @@ def is_nonsingular(A: np.ndarray) -> bool | None:
             wypadku `False`.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    
+    try:
+        if not isinstance(A, np.ndarray):
+            return None
+        if len(A.shape) != 2:
+            return None
+        if A.shape[0] != A.shape[1]:
+            return None
+        
+        det = np.linalg.det(A)
+        epsilon = np.finfo(float).eps
+        if abs(det) < epsilon:
+            return False
+        else:
+            return True
+    except Exception:
+        return None
